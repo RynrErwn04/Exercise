@@ -1,0 +1,104 @@
+
+# import os
+# from dotenv import load_dotenv
+# from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_core.prompts import ChatPromptTemplate
+# from langchain_core.output_parsers import StrOutputParser
+
+# load_dotenv()
+
+# api_key = os.getenv("GEMINI_API_KEY")
+
+# if not api_key:
+#     raise ValueError("GEMINI_API_KEY not found in .env file")
+
+# print("API key found!", flush=True)
+
+# llm = ChatGoogleGenerativeAI(
+#     model="gemma-4-26b-a4b-it",
+#     temperature=0.7,
+#     api_key=api_key,
+#     max_retries=0,
+#     timeout=30
+# )
+
+# prompt = ChatPromptTemplate.from_messages([
+#     ("system", "You are a helpful assistant."),
+#     ("human", "{input}")
+# ])
+
+# chain = prompt | llm | StrOutputParser()
+
+# print("Starting chat... Type 'quit' to exit.")
+
+# while True:
+#     user_input = input("\nYou: ").strip()
+
+#     if user_input.lower() in ["quit", "exit"]:
+#         break
+
+#     if not user_input:
+#         continue
+
+#     try:
+#         print("Sending request to AI...", flush=True)
+
+#         response = chain.invoke({"input": user_input})
+
+#         print("AI:", response, flush=True)
+
+#     except Exception as e:
+#         print("ERROR:", repr(e), flush=True)
+
+# print("Chat ended.")
+
+import os 
+from io import BytesIO
+from pypdf import PdfReader 
+from dotenv import load_dotenv 
+from fastapi import FastAPI, UploadFile, File, HTTPExecption
+from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_core.messages import HumanMessage 
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+app = FastAPI()
+load_dotenv()
+# THINKING_LEVEL = "low"
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-3.5-flash-lite",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
+    # thinking_level = THINKING_LEVEL
+)
+
+# prompt = ChatPromptTemplate.from_messages([
+#     ("system", "You are a helpful assistant that summarizes documents."),
+#     ("human", "Write a concise summary of the following:\n\nCONCISE SUMMARY:")
+# ])
+
+# llm_with_url = llm.bind_tools([{"url_context": {}}])
+# URL ="https://www.salesforce.com/ap/small-business/types-of-businesses/"
+
+prompt_template = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful assistant that summarizes documents."),
+    ("human", "Write a concise summary of the following:\n\n{text}\n\nCONCISE SUMMARY:")
+])
+
+chain = prompt_template| llm | StrOutputParser()
+
+# response = chain.invoke([
+#     HumanMessage(content=f"Write a concise summary of this page: {URL}")
+# ])
+
+# print(f"Thinking Level: {THINKING_LEVEL}")
+# print(f"Response    :\n{response}")
+
+# print(response)
+
+def read_pdf_file(file_contents: BytesIO) -> str:
+    try:
+        pdf_reader = PdfReader(file_contents)
+        return "\n".join(page.extract_text() or ""for page in pdf_reader.pages)
+    except Exception as e: 
+        raise HTTPException(status_code=400, detail=f"Error reading PDF: {e}") 

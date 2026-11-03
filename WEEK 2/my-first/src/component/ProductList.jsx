@@ -1,0 +1,56 @@
+function ProductCard({
+ id,
+ name = "Unknown Product" ,
+ Price = 0, 
+ image=  "/https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTL8bP0TWa0NvGs2gowckE8B4NnJyL1W9PL_K5Yh5-Uwo2DM9KebWhlU2rUER73LRUyorF7S_ZiUARvBcNWriq5vzwYk4zxT3Mof6_C76f6KNHyGQyOs-DfMwNWp353g5o9lTtBZw&usqp=CAc" ,
+ isOnSale = false, 
+}) {
+
+    return (
+        <div className="product-card">
+      <img src={image} alt={name} className="product-image" />
+      {isOnSale &<span className="sale-badge">On Sale!</span>}
+      <h3>{name}</h3>
+      <p className="product-price">${Price.toFixed(2)}</p>
+    </div>
+    );
+}
+
+
+function ProductList() {
+    const products = [
+    {
+      id: 1,
+      name: "Wireless Headphones",
+      Price: 99.99,
+      image: "data:image/webp;base64,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",
+      isOnSale: true,
+    },
+    {
+      id: 2,
+      name: "Smart Watch",
+      Price: 149.99,
+      image: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSTnWP60xGmQfAVUcDUdIbN7uv6ncz-CTY0VrS6B6jXhyRmEioyJr4N7W8oMBDhwP1_qA8E8VxrQMzXijoddnxD8Qu22aHvXhFuQgiFzkKBjQSXQqepY0On58KpL5hG39ZGh3BllA&usqp=CAc",
+      isOnSale: false,
+    },
+    {
+      id: 3,
+      name: "Bluetooth Speaker",
+      Price: 45.00,
+      image: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTQL59Ef5I1hHwVb9mX5loTK4Rf13SAsV3YYgKgqWEIChtipkCst_AXuekJEVpc8C5dx-And1L84RY3Lvz0ibYBaoiKG8_lxHbzOnBgLcBhzgIzzfQXC-bUIc7ZZlOPASOh9sK-a1Q&usqp=CAcom/150",
+      isOnSale: true,
+    },
+    ];
+
+return (
+    <div className="Product-List">
+        {products.map(product => (
+        <ProductCard key={product.id} {...product} />
+            
+        
+        ))}
+    </div>
+   );
+}
+
+export default ProductList
